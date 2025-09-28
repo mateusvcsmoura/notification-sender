@@ -13,9 +13,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// model Notification {
-//   id    String @id @default(auto()) @map("_id") @db.ObjectId
-//   title String
+enum NotificationChannel {
+  EMAIL
+  PUSH
+  SMS
+}
 
-//   @@map("notifications")
-// }
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model Notification {
+  id        String              @id @default(auto()) @map("_id") @db.ObjectId
+  recipient String
+  channel   NotificationChannel
+  status    NotificationStatus
+  payload   Json
+  sendAt    DateTime
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+
+  @@map("notifications")
+}
