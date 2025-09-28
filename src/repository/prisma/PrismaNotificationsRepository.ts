@@ -1,10 +1,10 @@
 import { Notification } from "@prisma/client";
-import { NotificationsRepository } from "../notification-repository.js";
+import { NotificationsRepository } from "../notifications-repository.js";
 import { NotificationInput } from "../schemas/notification-schema.js";
 import { prisma } from "../../database/index.js";
 
 export class PrismaNotificationsRepository implements NotificationsRepository {
-    create(attributes: NotificationInput) {
+    create(attributes: NotificationInput): Promise<Notification> {
         return prisma.notification.create({
             data: {
                 ...attributes,

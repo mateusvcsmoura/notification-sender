@@ -9,7 +9,7 @@ const SmsPayloadSchema = z.object({
     text: z.string().min(1).max(160, { message: "O texto deve ter no máximo 160 caracteres" }),
 });
 
-const NotificationSchema = z.discriminatedUnion("channel", [
+export const NotificationSchema = z.discriminatedUnion("channel", [
     z.object({
         channel: z.literal("EMAIL"),
         recipient: z.string().email(),
