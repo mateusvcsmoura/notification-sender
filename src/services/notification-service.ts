@@ -10,6 +10,14 @@ export class NotificationService {
         return this.notificationRepository.index(params);
     }
 
+    getRecentlyCreated = async (params?: { page?: number, limit?: number }) => {
+        return this.notificationRepository.recentlyCreated(params);
+    }
+
+    getRecentlySent = async (params?: { page?: number, limit?: number }) => {
+        return this.notificationRepository.recentlySent(params);
+    }
+
     create = async (attributes: NotificationInput) => {
         try {
             const newNotification = await this.notificationRepository.create(attributes);

@@ -12,5 +12,8 @@ router.post('/notification', notificationController.create);
 router.get('/notification/:notificationId', notificationController.findById);
 router.delete('/notification/:notificationId', notificationController.deleteById);
 
+router.get('/notifications/recently-created', notificationController.recentlyCreated);
+router.get('/notifications/recently-sent', notificationController.recentlySent);
+
 export { router };
 

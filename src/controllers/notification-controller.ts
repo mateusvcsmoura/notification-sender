@@ -28,6 +28,50 @@ export class NotificationController {
         }
     }
 
+    recentlyCreated: Handler = async (req, res, next: NextFunction) => {
+        try {
+            const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+            const pageSize = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
+            const { notifications, total } = await this.notificationService.getRecentlyCreated({ page, limit: pageSize });
+
+            const totalPages = Math.ceil(total / pageSize);
+
+            return res.status(200).json({
+                notifications,
+                pagination: {
+                    page,
+                    pageSize,
+                    totalPages,
+                    totalNotifications: total
+                }
+            });
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    recentlySent: Handler = async (req, res, next: NextFunction) => {
+        try {
+            const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+            const pageSize = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
+            const { notifications, total } = await this.notificationService.getRecentlySent({ page, limit: pageSize });
+
+            const totalPages = Math.ceil(total / pageSize);
+
+            return res.status(200).json({
+                notifications,
+                pagination: {
+                    page,
+                    pageSize,
+                    totalPages,
+                    totalNotifications: total
+                }
+            });
+        } catch (e) {
+            next(e);
+        }
+    }
+
     create: Handler = async (req, res, next: NextFunction) => {
         if (!req.body) throw new HttpError(400, "No req body");
 

@@ -38,18 +38,40 @@ export class PrismaNotificationsRepository implements NotificationsRepository {
         return prisma.notification.findUniqueOrThrow({ where: { id } });
     };
 
-    recentlyCreated(): Promise<Notification[]> {
-        return prisma.notification.findMany({
-            where: { status: "PENDING" },
-            orderBy: { createdAt: "desc" }
-        });
-    };
+    async recentlyCreated(params?: { page?: number; limit?: number }): Promise<{ notifications: Notification[]; total: number }> {
+        const page = params?.page && params.page > 0 ? params.page : 1;
+        const limit = params?.limit && params.limit > 0 ? params.limit : 10;
+        const skip = (page - 1) * limit;
 
-    recentlySent(): Promise<Notification[]> {
-        return prisma.notification.findMany({
-            where: { status: "SENT" },
-            orderBy: { createdAt: "desc" }
-        });
-    };
+        const [notifications, total] = await Promise.all([
+            prisma.notification.findMany({
+                where: { status: "PENDING" },
+                orderBy: { createdAt: "desc" },
+                skip,
+                take: limit,
+            }),
+            prisma.notification.count({ where: { status: "PENDING" } }),
+        ]);
+
+        return { notifications, total };
+    }
+
+    async recentlySent(params?: { page?: number; limit?: number }): Promise<{ notifications: Notification[]; total: number }> {
+        const page = params?.page && params.page > 0 ? params.page : 1;
+        const limit = params?.limit && params.limit > 0 ? params.limit : 10;
+        const skip = (page - 1) * limit;
+
+        const [notifications, total] = await Promise.all([
+            prisma.notification.findMany({
+                where: { status: "SENT" },
+                orderBy: { createdAt: "desc" },
+                skip,
+                take: limit,
+            }),
+            prisma.notification.count({ where: { status: "SENT" } }),
+        ]);
+
+        return { notifications, total };
+    }
 }
 
