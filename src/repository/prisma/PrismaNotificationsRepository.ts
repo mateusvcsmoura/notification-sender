@@ -13,16 +13,29 @@ export class PrismaNotificationsRepository implements NotificationsRepository {
         });
     };
 
-    delete(id: string) {
+    deleteById(id: string): Promise<Notification | null> {
         return prisma.notification.delete({ where: { id } });
     };
 
-    index(): Promise<Notification[]> {
-        return prisma.notification.findMany();
-    };
+    async index(params?: { page?: number; limit?: number }): Promise<{ notifications: Notification[]; total: number }> {
+        const page = params?.page && params.page > 0 ? params.page : 1;
+        const limit = params?.limit && params.limit > 0 ? params.limit : 10;
+        const skip = (page - 1) * limit;
+
+        const [notifications, total] = await Promise.all([
+            prisma.notification.findMany({
+                skip,
+                take: limit,
+                orderBy: { createdAt: "desc" },
+            }),
+            prisma.notification.count(),
+        ]);
+
+        return { notifications, total };
+    }
 
     findById(id: string): Promise<Notification | null> {
-        return prisma.notification.findUnique({ where: { id } });
+        return prisma.notification.findUniqueOrThrow({ where: { id } });
     };
 
     recentlyCreated(): Promise<Notification[]> {

@@ -6,6 +6,10 @@ import { HttpError } from "../errors/HttpError.js";
 export class NotificationService {
     constructor(private readonly notificationRepository: NotificationsRepository) { }
 
+    getAll = async (params?: { page?: number; limit?: number }) => {
+        return this.notificationRepository.index(params);
+    }
+
     create = async (attributes: NotificationInput) => {
         try {
             const newNotification = await this.notificationRepository.create(attributes);
@@ -17,6 +21,40 @@ export class NotificationService {
                     throw new HttpError(409, "There is already an notification registered in database with this ID");
                 }
             }
+
+            throw e;
+        }
+    }
+
+    findById = async (id: string) => {
+        try {
+            const notification = await this.notificationRepository.findById(id);
+
+            return notification;
+        } catch (e) {
+            if (e instanceof Prisma.PrismaClientKnownRequestError) {
+                if (e.code === "P2025") {
+                    throw new HttpError(404, "Notification not found");
+                }
+            }
+
+            throw e;
+        }
+    }
+
+    deleteById = async (id: string) => {
+        try {
+            const deletedNotification = await this.notificationRepository.deleteById(id);
+
+            return deletedNotification;
+        } catch (e) {
+            if (e instanceof Prisma.PrismaClientKnownRequestError) {
+                if (e.code === "P2025") {
+                    throw new HttpError(404, "Notification not found");
+                }
+            }
+
+            throw e;
         }
     }
 };
