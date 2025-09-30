@@ -1,3 +1,5 @@
+import { config } from "dotenv";
+config();
 import { z } from "zod";
 
 const envSchema = z.object({
@@ -5,6 +7,7 @@ const envSchema = z.object({
     EMAIL_APP_PASSWORD: z.string().min(1),
 
     DATABASE_URL: z.string().url(),
+    PORT: z.string(),
 
     TWILIO_ACCOUNT_SID: z.string().min(1),
     TWILIO_AUTH_TOKEN: z.string().min(1),
