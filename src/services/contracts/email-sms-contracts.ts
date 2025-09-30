@@ -5,3 +5,7 @@ export interface mailOptions {
     body: string
 }
 
+export interface smsOptions {
+    body: string;
+}
+
