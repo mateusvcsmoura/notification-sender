@@ -19,18 +19,17 @@ export class SmsService {
     public async sendSms(notification: Notification): Promise<void> {
         if (notification.channel === "SMS") {
             const payload = notification.payload as { text: string };
-            const fixedPhoneNumber = `whatsapp:${notification.recipient}`;
 
             try {
-                await this.client.messages.create({
+                const message = await this.client.messages.create({
                     body: payload.text,
                     from: this.twilioNumber,
-                    to: fixedPhoneNumber
+                    to: notification.recipient
                 });
 
-                console.log(`SMS Notification successfully sent!\n\nNotification ID: ${notification.id}\nTo: ${notification.recipient}`);
+                console.log(`WhatsApp Notification successfully sent! - ${new Date()}\nNotification ID: ${notification.id}\nMessage SID: ${message.sid}\nTo: ${notification.recipient}`);
             } catch (e) {
-                console.error(`Error trying to send SMS, ${e}`);
+                throw new Error(`Error trying to send WhatsApp message, ${e}`);
             }
         } else {
             throw new HttpError(500, "Internal Server Error: Tried to send another type notification by the sendSms() method");

@@ -94,7 +94,7 @@ export class NotificationService {
                 status: "SENT"
             });
 
-            console.log(`Success - ${new Date()}\nNotification ID: ${notification.id} successfully SENT and changed status.`);
+            console.log(`\nSuccess - ${new Date()}\nNotification ID: ${notification.id} successfully SENT and changed status.`);
         } catch (e) {
             console.error(`Error trying to process ${notification.id} ID. ${e}`);
 
