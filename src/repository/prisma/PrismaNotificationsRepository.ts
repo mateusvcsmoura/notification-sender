@@ -1,4 +1,4 @@
-import { Notification } from "@prisma/client";
+import { Notification, NotificationStatus } from "@prisma/client";
 import { NotificationsRepository } from "../notifications-repository.js";
 import { NotificationInput } from "../schemas/notification-schema.js";
 import { prisma } from "../../database/index.js";
@@ -72,6 +72,24 @@ export class PrismaNotificationsRepository implements NotificationsRepository {
         ]);
 
         return { notifications, total };
+
     }
+    async findPendingNotifications(): Promise<Notification[]> {
+        return prisma.notification.findMany({
+            where: {
+                status: "PENDING",
+                sendAt: { lte: new Date() }
+            }
+        })
+    };
+
+    async changeNotificationStatus(params: { notificationId: string, status: NotificationStatus }): Promise<void> {
+        await prisma.notification.update({
+            where: { id: params.notificationId },
+            data: { status: params.status }
+        });
+
+        return;
+    };
 }
 

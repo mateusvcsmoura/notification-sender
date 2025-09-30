@@ -1,4 +1,4 @@
-import { Notification } from "@prisma/client";
+import { Notification, NotificationStatus } from "@prisma/client";
 import { NotificationInput } from "./schemas/notification-schema.js";
 
 export interface NotificationsRepository {
@@ -8,5 +8,8 @@ export interface NotificationsRepository {
     findById: (id: string) => Promise<Notification | null>;
     recentlyCreated: (params?: { page?: number; limit?: number }) => Promise<{ notifications: Notification[]; total: number }>;
     recentlySent: (params?: { page?: number; limit?: number }) => Promise<{ notifications: Notification[]; total: number }>;
+
+    findPendingNotifications: () => Promise<Notification[]>;
+    changeNotificationStatus: (params: { notificationId: string, status: NotificationStatus }) => void;
 }
 

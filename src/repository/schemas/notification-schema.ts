@@ -24,4 +24,7 @@ export const NotificationSchema = z.discriminatedUnion("channel", [
     }),
 ]);
 
+export const notificationStatusEnum = z.literal(["PENDING", "SENT", "FAILED"]);
+
 export type NotificationInput = z.infer<typeof NotificationSchema>;
+export type NotificationStatus = z.infer<typeof notificationStatusEnum>;
