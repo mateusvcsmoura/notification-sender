@@ -1,10 +1,16 @@
-import { Prisma } from "@prisma/client";
+import { Notification, Prisma } from "@prisma/client";
 import { NotificationsRepository } from "../repository/notifications-repository.js";
 import { NotificationInput } from "../repository/schemas/notification-schema.js";
 import { HttpError } from "../errors/HttpError.js";
+import { EmailService } from "./email-service.js";
+import { SmsService } from "./sms-service.js";
 
 export class NotificationService {
-    constructor(private readonly notificationRepository: NotificationsRepository) { }
+    constructor(
+        private readonly notificationRepository: NotificationsRepository,
+        private readonly emailService: EmailService,
+        private readonly smsService: SmsService
+    ) { }
 
     getAll = async (params?: { page?: number; limit?: number }) => {
         return this.notificationRepository.index(params);
@@ -16,6 +22,10 @@ export class NotificationService {
 
     getRecentlySent = async (params?: { page?: number, limit?: number }) => {
         return this.notificationRepository.recentlySent(params);
+    }
+
+    getPendingNotifications = async () => {
+        return this.notificationRepository.findPendingNotifications();
     }
 
     create = async (attributes: NotificationInput) => {
@@ -63,6 +73,35 @@ export class NotificationService {
             }
 
             throw e;
+        }
+    }
+
+    processNotification = async (notification: Notification) => {
+        try {
+            switch (notification.channel) {
+                case "EMAIL":
+                    await this.emailService.sendEmail(notification);
+                    break;
+                case "SMS":
+                    await this.smsService.sendSms(notification);
+                    break;
+                default:
+                    throw new Error(`Unknown channel: ${notification.channel}`);
+            }
+
+            await this.notificationRepository.changeNotificationStatus({
+                notificationId: notification.id,
+                status: "SENT"
+            });
+
+            console.log(`Success - ${new Date()}\nNotification ID: ${notification.id} successfully SENT and changed status.`);
+        } catch (e) {
+            console.error(`Error trying to process ${notification.id} ID. ${e}`);
+
+            await this.notificationRepository.changeNotificationStatus({
+                notificationId: notification.id,
+                status: "FAILED"
+            });
         }
     }
 };

@@ -83,13 +83,11 @@ export class PrismaNotificationsRepository implements NotificationsRepository {
         })
     };
 
-    async changeNotificationStatus(params: { notificationId: string, status: NotificationStatus }): Promise<void> {
-        await prisma.notification.update({
+    async changeNotificationStatus(params: { notificationId: string, status: NotificationStatus }): Promise<Notification> {
+        return await prisma.notification.update({
             where: { id: params.notificationId },
             data: { status: params.status }
         });
-
-        return;
     };
 }
 

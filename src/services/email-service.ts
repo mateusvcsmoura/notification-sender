@@ -40,9 +40,9 @@ export class EmailService {
                     text: mail.body
                 });
 
-                console.log(`\nE-mail Notification successfully sent!\n\nNotification ID: ${notification.id}\nFrom: ${mail.from}\nTo: ${mail.to}\nSubject: ${mail.subject}`);
+                console.log(`\nE-mail Notification successfully sent! - ${new Date()}\n\nNotification ID: ${notification.id}\nFrom: ${mail.from}\nTo: ${mail.to}\nSubject: ${mail.subject}`);
             } catch (e) {
-                console.error(`Error trying to send email, ${e}`);
+                throw new Error(`Error trying to send email, ${e}`);
             }
         } else {
             throw new HttpError(500, "Internal Server Error: Tried to send another type notification by the sendEmail method");

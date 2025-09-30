@@ -10,6 +10,6 @@ export interface NotificationsRepository {
     recentlySent: (params?: { page?: number; limit?: number }) => Promise<{ notifications: Notification[]; total: number }>;
 
     findPendingNotifications: () => Promise<Notification[]>;
-    changeNotificationStatus: (params: { notificationId: string, status: NotificationStatus }) => void;
+    changeNotificationStatus: (params: { notificationId: string, status: NotificationStatus }) => Promise<Notification>;
 }
 
