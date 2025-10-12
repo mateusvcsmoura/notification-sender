@@ -11,6 +11,7 @@ Um sistema de envio de notificações programadas que suporta múltiplos canais 
 - **Validação**: Validação robusta de dados com Zod
 - **Arquitetura Limpa**: Separação clara entre camadas (Controllers, Services, Repository)
 - **TypeScript**: Totalmente tipado para melhor desenvolvimento
+- **Testes Automatizados**: Suíte completa de testes unitários e de integração
 
 ## 🛠️ Tecnologias
 
@@ -23,6 +24,8 @@ Um sistema de envio de notificações programadas que suporta múltiplos canais 
 - **Twilio** - Envio de SMS/WhatsApp
 - **Node-cron** - Agendamento de tarefas
 - **CORS** - Controle de acesso
+- **Jest** - Framework de testes
+- **Supertest** - Testes de integração para APIs
 
 ## 📁 Estrutura do Projeto
 
@@ -45,15 +48,22 @@ src/
 │   └── schemas/
 │       └── notification-schema.ts        # Schemas de validação
 ├── services/
+│   ├── __tests__/
+│   │   ├── email-service.spec.ts        # Testes do serviço de email
+│   │   ├── notification-service.spec.ts # Testes do serviço principal
+│   │   ├── scheduler-service.spec.ts    # Testes do serviço de agendamento
+│   │   └── sms-service.spec.ts         # Testes do serviço de SMS/WhatsApp
 │   ├── contracts/
 │   │   └── email-sms-contracts.ts       # Contratos dos serviços
 │   ├── email-service.ts         # Serviço de email
 │   ├── notification-service.ts  # Serviço principal
 │   ├── scheduler-service.ts     # Serviço de agendamento
 │   └── sms-service.ts          # Serviço de SMS/WhatsApp
+├── app.ts                      # Configuração do Express
 ├── container.ts                 # Injeção de dependências
+├── routes.spec.ts              # Testes de integração das rotas
 ├── routes.ts                   # Definição das rotas
-└── server.ts                   # Configuração do servidor
+└── server.ts                   # Inicialização do servidor
 ```
 
 ## 🔧 Instalação e Configuração
@@ -107,6 +117,12 @@ npm run dev
 # Produção
 npm run build
 npm start
+
+# Executar testes
+npm test
+
+# Executar testes em modo watch
+npm run test:watch
 ```
 
 ## 📋 API Endpoints
@@ -202,6 +218,47 @@ O sistema inclui tratamento robusto de erros:
 - Middleware global de tratamento de erros
 - Logs detalhados para debugging
 
+## 🧪 Testes
+
+O projeto possui uma suíte completa de testes automatizados:
+
+### **Testes Unitários**
+- **EmailService**: Testa envio de emails via Nodemailer
+- **SmsService**: Testa envio de SMS/WhatsApp via Twilio
+- **NotificationService**: Testa lógica de negócio e tratamento de erros Prisma
+- **SchedulerService**: Testa processamento de notificações agendadas
+
+### **Testes de Integração**
+- **Routes**: Testa todos os endpoints da API
+  - `GET /api/notifications` - Listagem paginada
+  - `GET /api/notifications/recently-created` - Notificações recentes
+  - `GET /api/notifications/recently-sent` - Notificações enviadas
+  - `POST /api/notification` - Criação de notificações
+  - `GET /api/notification/:id` - Busca por ID
+  - `DELETE /api/notification/:id` - Deleção de notificações
+
+### **Executar Testes**
+```bash
+# Executar todos os testes
+npm test
+
+# Executar com cobertura
+npm run test:coverage
+
+# Executar em modo watch (desenvolvimento)
+npm run test:watch
+
+# Executar testes específicos
+npm test -- --testNamePattern="EmailService"
+```
+
+### **Cobertura de Testes**
+- ✅ Services (100% das funções principais)
+- ✅ Controllers via testes de integração
+- ✅ Tratamento de erros Prisma
+- ✅ Validação de dados de entrada
+- ✅ Casos de sucesso e falha
+
 ## 🔒 Limitações da Conta Trial (Twilio)
 
 - Apenas números verificados podem receber mensagens
@@ -215,10 +272,6 @@ O sistema inclui tratamento robusto de erros:
 3. Commit suas mudanças (`git commit -am 'Adiciona nova feature'`)
 4. Push para a branch (`git push origin feature/nova-feature`)
 5. Abra um Pull Request
-
-## 📄 Licença
-
-Este projeto está sob a licença ISC. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ## 👨‍💻 Autor
 
