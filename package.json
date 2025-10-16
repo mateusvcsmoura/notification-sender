@@ -6,6 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node build/server.js"
@@ -36,7 +38,6 @@
     "prisma": "^6.16.2",
     "supertest": "^7.1.4",
     "ts-jest": "^29.4.5",
-    "tsc": "^2.0.4",
     "tsx": "^4.20.6",
     "typescript": "^5.9.2"
   }

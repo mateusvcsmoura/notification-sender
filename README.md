@@ -19,6 +19,7 @@ Um sistema de envio de notificações programadas que suporta múltiplos canais 
 - **Express.js** - Framework web
 - **Prisma** - ORM para banco de dados
 - **MongoDB** - Banco de dados NoSQL
+- **Docker** + **Docker Compose** - Containerização e orquestração
 - **Zod** - Validação e tipagem
 - **Nodemailer** - Envio de emails
 - **Twilio** - Envio de SMS/WhatsApp
@@ -66,7 +67,80 @@ src/
 └── server.ts                   # Inicialização do servidor
 ```
 
-## 🔧 Instalação e Configuração
+## 🐳 Docker (Recomendado)
+
+O projeto foi **dockerizado** com `Dockerfile` e `docker-compose.yaml` para facilitar o setup e deployment.
+
+### Execução com Docker Compose
+
+1. **Clone o repositório**
+```bash
+git clone https://github.com/mateusvcsmoura/notification-sender.git
+cd notification-sender
+```
+
+2. **Configure as variáveis de ambiente**
+```bash
+cp .env.example .env
+# Edite o arquivo .env com suas credenciais
+```
+
+3. **Execute com Docker Compose**
+```bash
+# Construir e executar todos os serviços
+docker-compose up --build
+
+# Executar em background (detached)
+docker-compose up -d --build
+
+# Parar os serviços
+docker-compose down
+```
+
+### Serviços Docker
+
+- **API**: Aplicação Node.js na porta `3000`
+- **Database**: MongoDB está sendo usado via Atlas, portanto não há necessidade de um service para ele
+- **Network**: Rede isolada para comunicação entre serviços
+
+### Variáveis de Ambiente para Docker
+
+```env
+# Database
+DATABASE_URL=<url_atlas_mongo>
+
+# Application
+PORT=3000
+
+# Email (Gmail)
+EMAIL_USER=seu-email@gmail.com
+EMAIL_APP_PASSWORD=senha-do-app
+
+# Twilio (SMS/WhatsApp)
+TWILIO_ACCOUNT_SID=seu-account-sid
+TWILIO_AUTH_TOKEN=seu-auth-token
+TWILIO_PHONE_NUMBER="whatsapp:+1234567890"
+```
+
+### 🏗️ Arquitetura Docker
+
+O projeto utiliza **multi-stage build** para otimizar a imagem de produção:
+
+#### **Stage 1: Builder**
+- Instala todas as dependências (incluindo devDependencies)
+- Gera o cliente Prisma
+- Compila o TypeScript para JavaScript
+
+#### **Stage 2: Runtime**
+- Instala apenas dependências de produção (`--omit=dev`)
+- Copia apenas os arquivos necessários (build + prisma)
+- Resulta em uma imagem menor e mais segura
+
+#### **Docker Compose Features**
+- 🔗 **Network isolada** para comunicação entre serviços
+- 🔄 **Restart automático** em caso de falha
+
+## 🔧 Instalação Manual (Sem Docker)
 
 ### 1. Clone o repositório
 ```bash
@@ -83,7 +157,7 @@ npm install
 Copie o arquivo `.env.example` para `.env` e preencha as variáveis:
 
 ```env
-# Database
+# Database (MongoDB Atlas ou local)
 DATABASE_URL="mongodb+srv://usuario:senha@cluster.mongodb.net/database"
 
 # Server
